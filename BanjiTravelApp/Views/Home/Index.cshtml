@@ -1,104 +1,63 @@
-﻿@model dynamic
-@{
+﻿@{
     Layout = null;
+    Response.Headers["X-UA-Compatible"] = "IE=10";
 }
-
 <!DOCTYPE html>
-
-<html>
+<html lang="en">
 <head>
+    <meta charset="utf-8" />
+    <title>My ASP.NET Application</title>
+    <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
     <meta name="viewport" content="width=device-width" />
-    <title>BanjiTravelApp</title>
-    <style>
-        html, body, #map-canvas {
-height: 100%;
-margin:  0px;
-padding:  0px;
-}
-html {
-    position: relative;
-}
-body {
-    overflow: hidden;
-    margin:  0px 0px 40px;
-}
-header {
-    background-color:  white;
-    opacity: 0.2;
-    position: absolute;
-    left: 0;
-    top: 0;
-    height:  20px;
-    width:  100%;
-    z-index:  2;
-    padding:  10px 0px;
-}
-#logo {
-    float: left;
-    padding-left:  10px;
-}
-#login {
-    float: right;
-}
-#copyright {
-    padding-right:  10px;
-    float:  right;
-}
-footer {
-    background-color:  white;
-    opacity: 0.2;
-    position: absolute;
-    left:  0;
-    bottom:  0;
-    height:  20px;
-    width:  100%;
-    padding:  10px 0px;
-}
-    </style>
-    <script type="text/javascript" src="/Scripts/jquery-1.10.2.min.js"></script>
-    <script type="text/javascript" src="/Scripts/jquery.signalR-2.0.3.js"></script>
-    <script type="text/javascript" src="/Scripts/knockout-3.1.0.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>  
-    <script src="/signalr/hubs"></script>
-    <script type="text/javascript">
-        var map;
-        function initialize() {
-            var mapOptions = {
-                zoom: 2,
-                center: new google.maps.LatLng(0, 0)
-            };
-
-            map = new google.maps.Map(document.getElementById('map-canvas'),
-                mapOptions);
-
-            google.maps.event.addListener(map, 'click', function (e) {
-                console.log("Sending latlng");
-                $.connection.travelHub.server.addMarker(e.latLng.lat(), e.latLng.lng());
-            });
-
-            $.connection.travelHub.client.successful = function (lat, lng) {
-                var latlngliteral = {lat: lat, lng: lng};
-                var marker = new google.maps.Marker({
-                    position: latlngliteral,
-                    map: map
-                });
-                map.panTo(latlngliteral);
-            };
-
-            $.connection.hub.start();
-        }
-
-        google.maps.event.addDomListener(window, 'load', initialize);
-    </script>
+    @Styles.Render("~/Content/css")
+        @Scripts.Render("~/bundles/modernizr")
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=weather,places"></script>
 </head>
 <body>
-    <header>
-        <div id="logo">BanjiTravelApp</div>
-        <div id="login"><a href="#">Login to Facebook</a></div>
-    </header>
-    <div id="map-canvas"></div>
-    <footer>
-        <div id="copyright">&copy; Banji Travel App</div>
-    </footer>
-    </body>
+    <div data-bind="visible: loading">Loading...</div>
+    <div style="display: none;height:100%;" data-bind="visible: true" class="container body-content">
+        <div class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <p class="navbar-brand" data-bind="if: !loggedIn()">Application Name</p>
+                    <a href="#" class="navbar-brand" data-bind="if: loggedIn, click: navigateToHome">Application Name</a>
+                </div>
+                <div data-bind="if: loggedIn" class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="#" data-bind="click: navigateToHome">Home</a></li>
+                        <li>@Html.ActionLink("API", "Index", "Help", new { area = "HelpPage" }, null)</li>
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right" data-bind="with: user">
+                        <li>
+                            <span class="navbar-text nofloat">Hello, <a href="#" class="navbar-link" data-bind="text: name, click: manage"></a>!</span>
+                        </li>
+                        <li><a href="#" data-bind="click: logOff">Log off</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div data-bind="foreach: errors" class="padding-error">
+            <p class="text-danger" data-bind="text: $data"></p>
+        </div>
+        @Html.Partial("_Home")
+        @Html.Partial("_Login")
+        @Html.Partial("_Register")
+        @Html.Partial("_RegisterExternal")
+        @Html.Partial("_Manage")
+        <footer class="footer container-fluid" style="z-index:2">
+            <div class="text-muted pull-right">&copy; Banji Travel App</div>
+        </footer>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/knockout")
+    @Scripts.Render("~/bundles/app")
+    @Scripts.Render("~/bundles/bootstrap")
+</body>
 </html>

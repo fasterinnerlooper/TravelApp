@@ -1,5 +1,6 @@
 ﻿using System;
-using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Owin;
 using Owin;
 
@@ -7,13 +8,11 @@ using Owin;
 
 namespace BanjiTravelApp
 {
-    public class Startup
+    public partial class Startup
     {
         public void Configuration(IAppBuilder app)
         {
-            // Any connection or hub wire up and configuration should go here
-            app.MapSignalR();
-
+            ConfigureAuth(app);
         }
     }
 }

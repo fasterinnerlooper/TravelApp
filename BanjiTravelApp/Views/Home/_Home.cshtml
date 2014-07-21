@@ -1,0 +1,19 @@
+﻿<!-- ko with: home -->
+<div class="container-fluid row" style="height:100%;">
+    <div id="sidebar" style="height: 100%;position: absolute;z-index:1;background-color: white;opacity:0.75;padding:50px 0;" class="col-md-2">
+        <ul class="nav nav-pills nav-stacked" style="margin-left: 10px;" data-bind="foreach: pinOptions">
+            <li>
+                <span data-bind="text: $data, click: $parent.setMarkerName"></span>
+            </li>
+        </ul>
+    </div>
+    <div id="map-canvas" data-bind="click: createMap(this)"></div>
+    <div style="position: absolute; bottom: 50px;padding-left: 10px;" class="col-md-offset-2">
+        <ul class="breadcrumb" data-bind="foreach: breadcrumbs">
+            <li>
+                <a href="#" data-bind="click: $parent.goToBreadcrumb"><span data-bind="text: name"></span></a>
+            </li>
+        </ul>
+    </div>
+</div>
+<!-- /ko -->
