@@ -1,9 +1,10 @@
 ﻿<!-- ko with: home -->
 <div class="container-fluid row" style="height:100%;">
     <div id="sidebar" style="height: 100%;position: absolute;z-index:1;background-color: white;opacity:0.75;padding:50px 0;" class="col-md-2">
+        <h1 data-bind="text: sidebarTitle"></h1>
         <ul class="nav nav-pills nav-stacked" style="margin-left: 10px;" data-bind="foreach: pinOptions">
             <li>
-                <span data-bind="text: $data, click: $parent.setMarkerName"></span>
+                <a href="#" data-bind="click: $parent.setMarkerName"><span data-bind="text: $data"></span></a>
             </li>
         </ul>
     </div>
