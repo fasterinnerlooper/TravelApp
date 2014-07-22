@@ -23,14 +23,6 @@
     }
 }
 
-function Marker(marker) {
-    var self = this;
-    self.latitude = marker.latitude;
-    self.longitude = marker.longitude;
-    self.name = marker.name;
-    self.profileId = marker.profileId;
-}
-
 function ProfileDataModel(username) {
     var self = this;
     self.username = username;

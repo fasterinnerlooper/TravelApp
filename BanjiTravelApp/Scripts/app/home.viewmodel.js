@@ -9,6 +9,7 @@ function HomeViewModel(app) {
 
     self.markers = ko.observableArray();
     self.sidebarTitle = ko.observable();
+    self.markerDetails = ko.observable();
     self.pinOptions = ko.observableArray();
     self.breadcrumbs = ko.observableArray([{ latLng: new google.maps.LatLng(0, 0), zoom: 2, name: 'World' }]);
     self.mapOptions = {
@@ -34,15 +35,21 @@ function HomeViewModel(app) {
                         map: self.map,
                         title: 'Give me a name'
                     });
-                   self.infoWindow = new google.maps.InfoWindow({
+                    self.infoWindow = new google.maps.InfoWindow({
                         content: 'Use the left sidebar to give me a name'
                     });
-                   self.infoWindow.open(self.map, self.currentMarker);
-                   self.geocoder.geocode({ 'latLng': e.latLng }, function (result, status) {
-                       if (status == google.maps.GeocoderStatus.OK) {
-                           self.setPinOptions(result);
-                       }
-                   });
+                    self.infoWindow.open(self.map, self.currentMarker);
+                    self.geocoder.geocode({ 'latLng': e.latLng }, function (result, status) {
+                        if (status == google.maps.GeocoderStatus.ZERO_RESULTS) {
+                            alert("No locations were found close to here, please try again");
+                            self.currentMarker.setMap(null);
+                            self.currentMarker = null;
+                        }
+                        if (status == google.maps.GeocoderStatus.OK) {
+                            self.setPinOptions(result);
+                            self.openSidebar();
+                        }
+                    });
                 }
             }, 250);
         });
@@ -85,7 +92,9 @@ function HomeViewModel(app) {
             gmarker = new google.maps.Marker({
                 position: { lat: marker.latitude, lng: marker.longitude },
                 map: self.map,
-                title: marker.name
+                title: marker.name,
+                markerId: marker.markerId,
+                experience: marker.experience
             });
             gmarker.name = marker.name;
             //Set up marker click event
@@ -96,8 +105,14 @@ function HomeViewModel(app) {
     self.giveMarkerClickEvent = function (marker) {
         google.maps.event.addListener(marker, 'click', function () {
             self.sidebarTitle(marker.title);
+            self.showMarkerDetails(marker);
+            self.openSidebar();
         });
     };
+
+    self.openSidebar = function () {
+        $('#sidebar').show().addClass("col-md-3");
+    }
 
     self.setMarkerName = function (name) {
         self.currentMarker.title = name;
@@ -106,6 +121,32 @@ function HomeViewModel(app) {
         self.giveMarkerClickEvent(self.currentMarker);
         self.currentMarker = null;
         self.pinOptions.removeAll();
+    };
+
+    self.showMarkerDetails = function (marker) {
+        self.currentMarker = marker;
+        self.markerDetails({
+            'markerId': marker.markerId,
+            'experience': (marker.experience === undefined || marker.experience === null) ? 'Enter your experience here' : marker.experience
+        });
+    };
+    
+    self.saveMarkerDetails = function (data) {
+        self.currentMarker.experience = data.experience
+        $.ajax("/api/Marker/" + data.markerId, {
+            type: "PUT",
+            data: {
+                markerId: self.currentMarker.markerId,
+                name: self.currentMarker.name,
+                latitude: self.currentMarker.position.lat(),
+                longitude: self.currentMarker.position.lng(),
+                date: (new Date()).toJSON(),
+                experience: self.currentMarker.experience,
+                likes: self.currentMarker.likes,
+                dislikes: self.currentMarker.dislikes,
+                profileId: self.profile.profile.profileId
+            }
+        });
     };
 
     self.addMarker = function (marker) {
@@ -144,3 +185,15 @@ app.addViewModel({
         app.view(app.views.Home);
     }
 });
+
+function Marker(marker) {
+    var self = this;
+    self.markerId = marker.markerId;
+    self.latitude = marker.latitude;
+    self.longitude = marker.longitude;
+    self.name = marker.name;
+    self.profileId = marker.profileId;
+    self.experience = marker.experience;
+    self.likes = marker.likes;
+    self.dislikes = marker.dislikes;
+}
