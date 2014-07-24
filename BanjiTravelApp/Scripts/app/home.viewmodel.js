@@ -20,49 +20,51 @@ function HomeViewModel(app) {
     self.currentMarker = null;
 
     self.createMap = function (map) {
-        self.map = new google.maps.Map(document.getElementById("map-canvas"),
-            self.mapOptions);
-        //set up map click event
-        google.maps.event.addListener(self.map, 'click', function (e) {
-            if (self.infoWindow != null) {
-                self.infoWindow.close();
-            }
-            dblclickWait = true;
-            setTimeout(function () {
-                if (dblclickWait) {
-                    self.currentMarker = new google.maps.Marker({
-                        position: e.latLng,
-                        map: self.map,
-                        title: 'Give me a name'
-                    });
-                    self.infoWindow = new google.maps.InfoWindow({
-                        content: 'Use the left sidebar to give me a name'
-                    });
-                    self.infoWindow.open(self.map, self.currentMarker);
-                    self.geocoder.geocode({ 'latLng': e.latLng }, function (result, status) {
-                        if (status == google.maps.GeocoderStatus.ZERO_RESULTS) {
-                            alert("No locations were found close to here, please try again");
-                            self.currentMarker.setMap(null);
-                            self.currentMarker = null;
-                        }
-                        if (status == google.maps.GeocoderStatus.OK) {
-                            self.setPinOptions(result);
-                            self.openSidebar();
-                        }
-                    });
+        if (self.map === null) {
+            self.map = new google.maps.Map(document.getElementById("map-canvas"),
+                self.mapOptions);
+            //set up map click event
+            google.maps.event.addListener(self.map, 'click', function (e) {
+                if (self.infoWindow != null) {
+                    self.infoWindow.close();
                 }
-            }, 250);
-        });
+                dblclickWait = true;
+                setTimeout(function () {
+                    if (dblclickWait) {
+                        self.currentMarker = new google.maps.Marker({
+                            position: e.latLng,
+                            map: self.map,
+                            title: 'Give me a name'
+                        });
+                        self.infoWindow = new google.maps.InfoWindow({
+                            content: 'Use the left sidebar to give me a name'
+                        });
+                        self.infoWindow.open(self.map, self.currentMarker);
+                        self.geocoder.geocode({ 'latLng': e.latLng }, function (result, status) {
+                            if (status == google.maps.GeocoderStatus.ZERO_RESULTS) {
+                                alert("No locations were found close to here, please try again");
+                                self.currentMarker.setMap(null);
+                                self.currentMarker = null;
+                            }
+                            if (status == google.maps.GeocoderStatus.OK) {
+                                self.setPinOptions(result);
+                                self.openSidebar();
+                            }
+                        });
+                    }
+                }, 250);
+            });
 
-        //Zoom and add to breadcrumbs on map double click
-        google.maps.event.addListener(self.map, 'dblclick', function (e) {
-            dblclickWait = false;
-            breadcrumb = {
-                latLng: e.latLng,
-                zoom: self.map.getZoom() + 1
-            };
-            self.addBreadcrumb(breadcrumb);
-        });
+            //Zoom and add to breadcrumbs on map double click
+            google.maps.event.addListener(self.map, 'dblclick', function (e) {
+                dblclickWait = false;
+                breadcrumb = {
+                    latLng: e.latLng,
+                    zoom: self.map.getZoom() + 1
+                };
+                self.addBreadcrumb(breadcrumb);
+            });
+        }
     };
     
 
