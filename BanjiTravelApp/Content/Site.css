@@ -16,11 +16,6 @@ textarea {
     max-width: 280px;
 }
 
-/* Set padding to display errors that occur during databinding */
-.padding-error {
-    padding-top: 20px;
-}
-
 /* styles for validation helpers */
 .field-validation-error {
     color: #b94a48;
@@ -88,4 +83,13 @@ padding:  0;
 }
 .navbar .glyphicon {
     margin-right: 5px;
+}
+#sidebar {
+    height: 100%;
+    position: absolute;
+    z-index:1;
+    background-color: white;
+    opacity:0.9;
+    padding:0 10px;
+    display:none;
 }
