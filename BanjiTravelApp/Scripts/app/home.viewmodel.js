@@ -9,8 +9,13 @@ function HomeViewModel(app) {
 
     self.markers = ko.observableArray();
     self.sidebarTitle = ko.observable();
-    self.markerDetails = ko.observable();
     self.pinOptions = ko.observableArray();
+    self.saving = ko.observable();
+
+    //View-switching objects
+    self.markerDetails = ko.observable();
+    self.travelPlans = ko.observable();
+
     self.breadcrumbs = ko.observableArray([{ latLng: new google.maps.LatLng(0, 0), zoom: 2, name: 'World' }]);
     self.mapOptions = {
         zoom: 2,
@@ -39,6 +44,11 @@ function HomeViewModel(app) {
                         self.infoWindow = new google.maps.InfoWindow({
                             content: 'Use the left sidebar to give me a name'
                         });
+                        google.maps.event.addListener(self.infoWindow, 'closeclick', function () {
+                            self.closeSidebar();
+                            self.currentMarker.setMap(null);
+                            self.currentMarker = null;
+                        });
                         self.infoWindow.open(self.map, self.currentMarker);
                         self.geocoder.geocode({ 'latLng': e.latLng }, function (result, status) {
                             if (status == google.maps.GeocoderStatus.ZERO_RESULTS) {
@@ -66,7 +76,7 @@ function HomeViewModel(app) {
             });
         }
     };
-    
+
 
 
     //methods
@@ -96,7 +106,9 @@ function HomeViewModel(app) {
                 map: self.map,
                 title: marker.name,
                 markerId: marker.markerId,
-                experience: marker.experience
+                experience: marker.experience,
+                likes: marker.likes,
+                dislikes: marker.dislikes
             });
             gmarker.name = marker.name;
             //Set up marker click event
@@ -106,6 +118,7 @@ function HomeViewModel(app) {
 
     self.giveMarkerClickEvent = function (marker) {
         google.maps.event.addListener(marker, 'click', function () {
+            self.saving('Save');
             self.sidebarTitle(marker.title);
             self.showMarkerDetails(marker);
             self.openSidebar();
@@ -115,6 +128,10 @@ function HomeViewModel(app) {
     self.openSidebar = function () {
         $('#sidebar').show().addClass("col-md-3");
     }
+
+    self.closeSidebar = function () {
+        $('#sidebar').removeClass('col-md-3', 400, 'easeInQuad').hide();
+    };
 
     self.setMarkerName = function (name) {
         self.currentMarker.title = name;
@@ -129,12 +146,17 @@ function HomeViewModel(app) {
         self.currentMarker = marker;
         self.markerDetails({
             'markerId': marker.markerId,
-            'experience': (marker.experience === undefined || marker.experience === null) ? 'Enter your experience here' : marker.experience
+            'experience': (marker.experience === undefined || marker.experience === null) ? 'Enter your experience here' : marker.experience,
+            'likes': (marker.likes === undefined || marker.experience === null) ? 'Enter your likes here' : marker.likes,
+            'dislikes': (marker.dislikes === undefined || marker.dislikes === null) ? 'Enter your dislikes here' : marker.dislikes
         });
     };
-    
+
     self.saveMarkerDetails = function (data) {
-        self.currentMarker.experience = data.experience
+        self.saving('Saving...');
+        self.currentMarker.experience = data.experience;
+        self.currentMarker.likes = data.likes;
+        self.currentMarker.dislikes = data.dislikes;
         $.ajax("/api/Marker/" + data.markerId, {
             type: "PUT",
             data: {
@@ -148,11 +170,13 @@ function HomeViewModel(app) {
                 dislikes: self.currentMarker.dislikes,
                 profileId: self.profile.profile.profileId
             }
+        }).success(function () {
+            self.saving('Saved!');
         });
     };
 
     self.addMarker = function (marker) {
-        self.markers.push(marker);     
+        self.markers.push(marker);
         $.ajax("/api/Marker", {
             type: "POST",
             data: {
@@ -177,7 +201,7 @@ function HomeViewModel(app) {
         self.map.setCenter(item.latLng);
         self.map.setZoom(item.zoom);
     };
-}
+};
 
 app.addViewModel({
     name: "Home",
