@@ -13,36 +13,43 @@
                         self.externalLoginProviders.push(new ExternalLoginProviderViewModel(app, data[i]));
                     }
                 } else {
-                    self.errors.push("An unknown error occurred.");
+                    self.loginerrors.push("An unknown error occurred.");
                 }
             }).fail(function () {
                 self.loadingExternalLogin(false);
-                self.errors.push("An unknown error occurred.");
+                self.loginerrors.push("An unknown error occurred.");
             });
     }
 
     // Data
-    self.userName = ko.observable("").extend({ required: true });
-    self.password = ko.observable("").extend({ required: true });
-    self.rememberMe = ko.observable(false);
-    self.externalLoginProviders = ko.observableArray();
-    self.validationErrors = ko.validation.group([self.userName, self.password]);
+    self.loginuserName = ko.observable("").extend({ required: true });
+    self.loginpassword = ko.observable("").extend({ required: true });
+    self.loginrememberMe = ko.observable(false);
+    self.loginexternalLoginProviders = ko.observableArray();
+    self.loginvalidationErrors = ko.validation.group([self.loginuserName, self.loginpassword]);
+    self.loginerrors = ko.observableArray();
+
+    self.registeruserName = ko.observable("").extend({ required: true });
+    self.registerpassword = ko.observable("").extend({ required: true });
+    self.registerconfirmPassword = ko.observable("").extend({ required: true, equal: self.registerpassword });
+    self.registervalidationErrors = ko.validation.group([self.registeruserName, self.registerpassword, self.registerconfirmPassword]);
+    self.registererrors = ko.observableArray();
 
     // Other UI state
-    self.errors = ko.observableArray();
     self.loadingExternalLogin = ko.observable(true);
     self.loggingIn = ko.observable(false);
+    self.registering = ko.observable(false);
 
     self.hasExternalLogin = ko.computed(function () {
-        return self.externalLoginProviders().length > 0;
+        return self.loginexternalLoginProviders().length > 0;
     });
 
     // Operations
     self.login = function () {
-        self.errors.removeAll();
+        self.loginerrors.removeAll();
 
-        if (self.validationErrors().length > 0) {
-            self.validationErrors.showAllMessages();
+        if (self.loginvalidationErrors().length > 0) {
+            self.loginvalidationErrors.showAllMessages();
             return;
         }
 
@@ -50,29 +57,73 @@
 
         dataModel.login({
             grant_type: "password",
-            username: self.userName(),
-            password: self.password()
+            username: self.loginuserName(),
+            password: self.loginpassword()
         }).done(function (data) {
             self.loggingIn(false);
 
             if (data.userName && data.access_token) {
-                app.navigateToLoggedIn(data.userName, data.access_token, self.rememberMe());
+                app.navigateToLoggedIn(data.userName, data.access_token, self.loginrememberMe());
             } else {
-                self.errors.push("An unknown error occurred.");
+                self.loginerrors.push("An unknown error occurred.");
             }
         }).failJSON(function (data) {
             self.loggingIn(false);
 
             if (data && data.error_description) {
-                self.errors.push(data.error_description);
+                self.loginerrors.push(data.error_description);
             } else {
-                self.errors.push("An unknown error occurred.");
+                self.loginerrors.push("An unknown error occurred.");
             }
         });
     };
 
     self.register = function () {
-        app.navigateToRegister();
+        self.registererrors.removeAll();
+        if (self.registervalidationErrors().length > 0) {
+            self.registervalidationErrors.showAllMessages();
+            return;
+        }
+        self.registering(true);
+
+        dataModel.register({
+            userName: self.registeruserName(),
+            password: self.registerpassword(),
+            confirmPassword: self.registerconfirmPassword()
+        }).done(function (data) {
+            dataModel.login({
+                grant_type: "password",
+                username: self.registeruserName(),
+                password: self.registerpassword()
+            }).done(function (data) {
+                self.registering(false);
+
+                if (data.userName && data.access_token) {
+                    app.navigateToLoggedIn(data.userName, data.access_token, false /* persistent */);
+                } else {
+                    self.registererrors.push("An unknown error occurred.");
+                }
+            }).failJSON(function (data) {
+                self.registering(false);
+
+                if (data && data.error_description) {
+                    self.registererrors.push(data.error_description);
+                } else {
+                    self.registererrors.push("An unknown error occurred.");
+                }
+            });
+        }).failJSON(function (data) {
+            var errors;
+
+            self.registering(false);
+            errors = dataModel.toErrorsArray(data);
+
+            if (errors) {
+                self.registererrors(errors);
+            } else {
+                self.registererrors.push("An unknown error occurred.");
+            }
+        });
     };
 
     initialize();

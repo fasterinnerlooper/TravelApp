@@ -24,7 +24,6 @@ namespace BanjiTravelApp
                 "~/Scripts/app/app.viewmodel.js",
                 "~/Scripts/app/home.viewmodel.js",
                 "~/Scripts/app/login.viewmodel.js",
-                "~/Scripts/app/register.viewmodel.js",
                 "~/Scripts/app/registerExternal.viewmodel.js",
                 "~/Scripts/app/manage.viewmodel.js",
                 "~/Scripts/app/userInfo.viewmodel.js",

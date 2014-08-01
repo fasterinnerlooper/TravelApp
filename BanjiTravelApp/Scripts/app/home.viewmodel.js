@@ -10,9 +10,10 @@ function HomeViewModel(app) {
     self.markers = ko.observableArray();
     self.sidebarTitle = ko.observable();
     self.pinOptions = ko.observableArray();
-    self.saving = ko.observable();
+    self.saving = ko.observable('Save');
 
     //View-switching objects
+    self.markingMap = ko.observable(false);
     self.markerDetails = ko.observable();
     self.travelPlans = ko.observable();
 
@@ -30,6 +31,10 @@ function HomeViewModel(app) {
                 self.mapOptions);
             //set up map click event
             google.maps.event.addListener(self.map, 'click', function (e) {
+                if (self.currentMarker != null && self.currentMarker.markerId == null) {
+                    self.currentMarker.setMap(null);
+                    self.currentMarker = null;
+                }
                 if (self.infoWindow != null) {
                     self.infoWindow.close();
                 }
@@ -46,8 +51,10 @@ function HomeViewModel(app) {
                         });
                         google.maps.event.addListener(self.infoWindow, 'closeclick', function () {
                             self.closeSidebar();
-                            self.currentMarker.setMap(null);
-                            self.currentMarker = null;
+                            if (self.currentMarker != null) {
+                                self.currentMarker.setMap(null);
+                                self.currentMarker = null;
+                            }
                         });
                         self.infoWindow.open(self.map, self.currentMarker);
                         self.geocoder.geocode({ 'latLng': e.latLng }, function (result, status) {
@@ -83,7 +90,9 @@ function HomeViewModel(app) {
     self.addBreadcrumb = function (item) {
         self.geocoder.geocode({ 'latLng': item.latLng }, function (result, status) {
             if (status == google.maps.GeocoderStatus.OK) {
-                self.setPinOptions(result);
+                if (self.markingMap() == true) {
+                    self.setPinOptions(result);
+                }
                 item.name = result[result.length - 1].formatted_address;
                 if (item.name != self.breadcrumbs()[self.breadcrumbs().length - 1].name) {
                     self.breadcrumbs.push(item);
@@ -93,6 +102,8 @@ function HomeViewModel(app) {
     };
 
     self.setPinOptions = function (result) {
+        self.markingMap(true);
+        self.markerDetails(false);
         self.pinOptions.removeAll();
         result.forEach(function (item) {
             self.pinOptions.push(item.formatted_address);
@@ -126,11 +137,14 @@ function HomeViewModel(app) {
     };
 
     self.openSidebar = function () {
-        $('#sidebar').show().addClass("col-md-3");
+        $('#sidebar').stop().animate({ left: '0px' });
+        $('#breadcrumb-container').stop().animate({ left: '320px' });
     }
 
     self.closeSidebar = function () {
-        $('#sidebar').removeClass('col-md-3', 400, 'easeInQuad').hide();
+        self.markingMap(false);
+        $('#breadcrumb-container').stop().animate({ left: '0px' });
+        $('#sidebar').stop().animate({ left: '-320px' });
     };
 
     self.setMarkerName = function (name) {
@@ -138,6 +152,7 @@ function HomeViewModel(app) {
         self.infoWindow.setContent(name);
         self.addMarker(self.currentMarker);
         self.giveMarkerClickEvent(self.currentMarker);
+        self.showMarkerDetails(self.currentMarker);
         self.currentMarker = null;
         self.pinOptions.removeAll();
     };
@@ -172,6 +187,9 @@ function HomeViewModel(app) {
             }
         }).success(function () {
             self.saving('Saved!');
+            setTimeout(function () {
+                self.saving('Save');
+            }, 2000);
         });
     };
 

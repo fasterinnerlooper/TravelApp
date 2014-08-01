@@ -1,12 +1,13 @@
 ﻿@{
     Layout = null;
     Response.Headers["X-UA-Compatible"] = "IE=10";
+    ViewBag.siteTitle = "BanjiTravelApp";
 }
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <title>BanjiTravelApp</title>
+    <title>@ViewBag.siteTitle</title>
     <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
     <meta name="viewport" content="width=device-width" />
     @Styles.Render("~/Content/css")
@@ -65,12 +66,24 @@
         <div style="padding-top: 40px;height:100%;">
             @Html.Partial("_Home")
             @Html.Partial("_Login")
-            @Html.Partial("_Register")
             @Html.Partial("_RegisterExternal")
             @Html.Partial("_Manage")
         </div>
-        <footer class="footer container-fluid" style="z-index:2">
-            <div class="text-muted pull-right">&copy; Banji Travel App</div>
+        <footer class="footer container-fluid" style="z-index:2;">
+            <div class="text-muted">
+                <ul class="nav nav-pills nav-justified">
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Help</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Terms</a></li>
+                    <li><a href="#">Privacy</a></li>
+                    <li><a href="#">Cookies</a></li>
+                    <li><a href="#">Brand</a></li>
+                    <li><a href="#">Developers</a></li>
+                    <li><a href="#">Media</a></li>
+                    <li class="disabled">&copy; @ViewBag.siteTitle</li>
+                </ul>
+            </div>
         </footer>
     </div>
 

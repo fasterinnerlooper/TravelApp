@@ -69,10 +69,6 @@ body {
 /* End Sticky footer styles
 -------------------------------------------------- */
 
-.container-fluid .text-muted {
-    line-height: 50px;
-    margin-right: 20px;
-}
 html, body, #map-canvas {
 height: 100%;
 margin:  0;
@@ -85,11 +81,21 @@ padding:  0;
     margin-right: 5px;
 }
 #sidebar {
+    left: -500px;
     height: 100%;
     position: absolute;
     z-index:1;
     background-color: white;
     opacity:0.9;
     padding:0 10px;
-    display:none;
+    overflow: auto;
+}
+.form-border {
+    border: 1px solid black;
+    padding: 20px;
+    margin: 20px;
+    border-radius: 5px;
+}
+.gm-style-iw {
+    width: auto !important;
 }

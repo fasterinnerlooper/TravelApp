@@ -1,43 +1,81 @@
 ﻿<!-- ko with: login -->
-<div class="body-content">
-<h2>Log in</h2>
-
-<div class="row">
-    <section class="col-md-8">
-        <form class="form-horizontal" role="form">
-            <h4>Use a local account to log in.</h4>
-            <hr />
-            <ul class="text-danger" data-bind="foreach: errors">
-                <li data-bind="text: $data"></li>
-            </ul>
-            <div class="form-group">
-                <label for="LoginUserName" class="col-md-2 control-label">User name</label>
-                <div class="col-md-10">
-                    <input type="text" id="LoginUserName" class="form-control" data-bind="value: userName, hasFocus: true" />
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="LoginPassword" class="col-md-2 control-label">Password</label>
-                <div class="col-md-10">
-                    <input type="password" id="LoginPassword" class="form-control" data-bind="value: password" />
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="col-md-offset-2 col-md-10">
-                    <div class="checkbox">
-                        <input type="checkbox" id="LoginRememberMe" data-bind="checked: rememberMe" />
-                        <label for="LoginRememberMe">Remember me?</label>
+<div class="body-content row">
+    <div class="col-md-6">
+        <h2>Welcome to @ViewBag.siteTitle</h2>
+        <p>Connect with your friends around the world with real-time updates.</p>
+        <p>Meet up with your friends now that you know where they are.</p>
+        <ul>
+            <li>See photos &amp; updates on a global platform</li>
+            <li>Share your travels</li>
+            <li>Make new friends around the globe</li>
+        </ul>
+    </div>
+    <section class="col-md-6">
+        <div class="form-border">
+            <form class="form-horizontal row" role="form">
+                <ul class="text-danger" data-bind="foreach: loginerrors">
+                    <li data-bind="text: $data"></li>
+                </ul>
+                <div class="form-group">
+                    <label for="RegisterUserName" class="col-md-4 control-label">Email Address</label>
+                    <div class="col-md-7">
+                        <input type="text" id="LoginUserName"  class="form-control" data-bind="value: loginuserName, hasFocus: true" />
                     </div>
                 </div>
-            </div>
-            <div class="form-group">
-                <div class="col-md-offset-2 col-md-10">
-                    <button type="submit" class="btn btn-default" data-bind="click: login, disable: loggingIn">Log in</button>
+                <div class="form-group">
+                    <label for="RegisterUserName" class="col-md-4 control-label">Password</label>
+                    <div class="col-md-7">
+                        <input type="password" id="LoginPassword" class="form-control" data-bind="value: loginpassword" />
+                    </div>
                 </div>
-            </div>
-            <p><a href="#" data-bind="click: register">Register</a> if you don't have a local account.</p>
-
-        </form>
+                <div class="form-group">
+                    <div class="col-md-offset-4 col-md-7">
+                        <div class="checkbox">
+                            <input type="checkbox" id="LoginRememberMe" data-bind="checked: loginrememberMe" />
+                            <label for="LoginRememberMe">Remember me?</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-offset-4 col-md-7">
+                        <button type="submit" class="btn btn-default" data-bind="click: login, disable: loggingIn">Log in</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="form-border">
+            <form class="form-horizontal" role="form"">
+                <h4>New to @ViewBag.siteTitle?</h4>
+                <p>Sign up and start connecting!</p>
+                <hr />
+                <ul class="text-danger" data-bind="foreach: registererrors">
+                    <li data-bind="text: $data"></li>
+                </ul>
+                <div class="form-group">
+                    <label for="RegisterUserName" class="col-md-4 control-label">Email Address</label>
+                    <div class="col-md-7">
+                        <input type="text" id="RegisterUserName" class="form-control" data-bind="value: registeruserName" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="RegisterPassword" class="col-md-4 control-label">Password</label>
+                    <div class="col-md-7">
+                        <input type="password" id="RegisterPassword" class="form-control" data-bind="value: registerpassword" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="RegisterConfirmPassword" class="col-md-4 control-label">Confirm password</label>
+                    <div class="col-md-7">
+                        <input type="password" id="RegisterConfirmPassword" class="form-control" data-bind="value: registerconfirmPassword" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-offset-4 col-md-4">
+                        <button type="submit" class="btn btn-default" data-bind="click: register, disable: registering">Register</button>
+                    </div>
+                </div>
+            </form>
+        </div>
     </section>
     <!--
     <section class="col-md-4">
@@ -60,5 +98,4 @@
     </section>
     //-->
 </div>
-    </div>
 <!-- /ko -->
