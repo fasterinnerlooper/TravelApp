@@ -14,7 +14,7 @@
         @Scripts.Render("~/bundles/modernizr")
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=weather,places"></script>
 </head>
-<body>
+<body style="overflow:hidden;">
     <div style="display: none;height: 100%;padding-top:20px;" data-bind="visible: true" class="container-fluid">
         <div class="navbar navbar-fixed-top navbar-default">
             <div class="container-fluid">
@@ -24,14 +24,15 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <p class="navbar-brand">BanjiTravelApp</p>
+                    <p class="navbar-brand"><a href="#" data-bind="click: navigateToHome">BanjiTravelApp</a></p>
                 </div>
                 <div data-bind="if: loggedIn" class="navbar-collapse collapse">
                     <ul class="nav navbar-nav navbar-right" data-bind="with: user">
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">Friends <span class="caret"></span></a>
                             <ul class="dropdown-menu" role="menu">
-                                <li><a href="#">Add a friend</a></li>
+                                <li><a href="#" data-bind="click: findFriend">Add a friend</a></li>
+                                <li><a href="#" data-bind="click: showFriendRequest">Friend Requests <span id="friendRequestCount" class="badge" data-bind="text: friendRequestCount"></span></a></li>
                                 <li><a href="#">All Friends</a></li>
                                 <li><a href="#">Chat</a></li>
                             </ul>

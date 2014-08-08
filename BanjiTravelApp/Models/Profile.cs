@@ -12,6 +12,6 @@ namespace BanjiTravelApp.Models
         public string DisplayName { get; set; }
         public string EmailAddress { get; set; }
         public ICollection<Marker> Markers { get; set; }
-        //public ICollection<Profile> Friends { get; set; }
+        public ICollection<Friends> Friends { get; set; }
     }
 }

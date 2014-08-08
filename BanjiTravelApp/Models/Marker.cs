@@ -9,7 +9,7 @@ namespace BanjiTravelApp.Models
     public class Marker
     {
         public int MarkerId { get; set; }
-        public string name { get; set; }
+        public string Name { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
         public int ProfileId { get; set; }

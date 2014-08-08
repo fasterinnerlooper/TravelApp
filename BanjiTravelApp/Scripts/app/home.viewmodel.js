@@ -5,17 +5,37 @@ function HomeViewModel(app) {
     //Profile Object
     self.map = null;
     self.profile = new ProfileViewModel(self);
+    self.friendRequest = new FriendRequestDataModel(self);
     self.geocoder = new google.maps.Geocoder();
 
     self.markers = ko.observableArray();
     self.sidebarTitle = ko.observable();
     self.pinOptions = ko.observableArray();
     self.saving = ko.observable('Save');
+    self.iconUrls = {
+        red: "http://maps.google.com/mapfiles/ms/icons/red-dot.png",
+        blue: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
+    }
 
     //View-switching objects
     self.markingMap = ko.observable(false);
     self.markerDetails = ko.observable();
     self.travelPlans = ko.observable();
+    self.findingFriend = ko.observable(false);
+    self.friendList = ko.observableArray();
+    self.requestList = ko.observableArray();
+    self.searchText = ko.observable().extend({ required: true });
+    self.friendRequestCount = ko.observable();
+    ko.computed(function () {
+        if (self.user() !== null) {
+            self.friendRequest.getRequests(self.user().name())
+            .success(function (data) {
+                self.friendRequestCount(data.length);
+                console.log("Inside home viewmodel");
+                console.log(self.friendRequestCount());
+            });
+        }
+    });
 
     self.breadcrumbs = ko.observableArray([{ latLng: new google.maps.LatLng(0, 0), zoom: 2, name: 'World' }]);
     self.mapOptions = {
@@ -102,24 +122,30 @@ function HomeViewModel(app) {
     };
 
     self.setPinOptions = function (result) {
+        self.sidebarTitle("Add Marker name");
         self.markingMap(true);
         self.markerDetails(false);
+        self.findingFriend(false);
         self.pinOptions.removeAll();
         result.forEach(function (item) {
             self.pinOptions.push(item.formatted_address);
         });
     };
 
-    self.setMarkers = function (markers) {
+    self.setMarkers = function (markers, iconUrl, friend) {
+        if (!iconUrl) iconUrl = self.iconUrls['red'];
+        if(!friend) friend = false;
         markers.forEach(function (marker) {
             gmarker = new google.maps.Marker({
                 position: { lat: marker.latitude, lng: marker.longitude },
                 map: self.map,
+                icon: iconUrl,
                 title: marker.name,
                 markerId: marker.markerId,
                 experience: marker.experience,
                 likes: marker.likes,
-                dislikes: marker.dislikes
+                dislikes: marker.dislikes,
+                friend: friend,
             });
             gmarker.name = marker.name;
             //Set up marker click event
@@ -131,6 +157,7 @@ function HomeViewModel(app) {
         google.maps.event.addListener(marker, 'click', function () {
             self.saving('Save');
             self.sidebarTitle(marker.title);
+            self.findingFriend(false);
             self.showMarkerDetails(marker);
             self.openSidebar();
         });
@@ -163,9 +190,70 @@ function HomeViewModel(app) {
             'markerId': marker.markerId,
             'experience': (marker.experience === undefined || marker.experience === null) ? 'Enter your experience here' : marker.experience,
             'likes': (marker.likes === undefined || marker.experience === null) ? 'Enter your likes here' : marker.likes,
-            'dislikes': (marker.dislikes === undefined || marker.dislikes === null) ? 'Enter your dislikes here' : marker.dislikes
+            'dislikes': (marker.dislikes === undefined || marker.dislikes === null) ? 'Enter your dislikes here' : marker.dislikes,
+            'friend': marker.friend,
         });
     };
+
+    self.findProfiles = function (form) {
+        var request = "api/profilesearch/" + form.ProfileSearch.value;
+        $.ajax(request, {
+            type: "GET"
+        })
+        .success(function (data) {
+            self.friendList.removeAll();
+            if (self.profile.profile.friends == null) {
+                ko.utils.arrayForEach(data, function (item) {
+                    item.sentRequest = false;
+                });
+            } else {
+                ko.utils.arrayForEach(data, function (item) {
+                    ko.utils.arrayForEach(self.profile.profile.friends, function (friend) {
+                        if (friend.username == item.username) {
+                            item.sentRequest = true;
+                        } else {
+                            item.sentRequest = false;
+                        }
+                    });
+                });
+            }
+            self.friendList(data);
+        })
+        .fail(function (data) {
+            alert("There was an error: " + data.responseText);
+        });
+    }
+
+    self.sendRequest = function (user) {
+        $.ajax("/api/friendRequest", {
+            type: "POST",
+            data: {
+                toUserId: user.profileId,
+                fromUserId: self.profile.profile.profileId,
+                requestDateTime: (new Date()).toJSON()
+            }
+        }).success(function (data) {
+            alert("Request successfully sent")
+        }).fail(function (data) {
+            alert("There was an error: " + data.responseText);
+        });
+    };
+
+    self.acceptRequest = function (user) {
+        $.ajax("/api/friendRequest", {
+            type: "POST",
+            data: {
+                toUserId: user.toUserId,
+                fromUserId: user.fromUserId,
+                requestDateTime: user.requestDateTime
+            }
+        }).success(function (data) {
+            alert("Request accepted")
+            self.addFriendMarkers();
+        }).fail(function (data) {
+            alert("There was an error: " + data.responseText)
+        });
+    }
 
     self.saveMarkerDetails = function (data) {
         self.saving('Saving...');
@@ -212,6 +300,7 @@ function HomeViewModel(app) {
             alert('Adding the marker failed for the following reason(s): ' + errorText);
         });
     };
+
     self.goToBreadcrumb = function (item) {
         self.currentCrumb = item;
         itemIndex = self.breadcrumbs.indexOf(item);
@@ -219,6 +308,59 @@ function HomeViewModel(app) {
         self.map.setCenter(item.latLng);
         self.map.setZoom(item.zoom);
     };
+
+    self.setTravelPlans = function (travelPlans) {
+        self.travelPlans(travelPlans);
+        self.findingFriend(false);
+        self.markingMap(false);
+        self.sidebarTitle("Travel Plans");
+        self.currentMarker = null;
+        self.pinOptions.removeAll();
+        self.openSidebar();
+    };
+
+    self.findFriend = function () {
+        self.findingFriend(true);
+        self.markerDetails(false);
+        self.markingMap(false);
+        self.sidebarTitle("Find Friends");
+        self.openSidebar();
+    };
+
+    self.showFriendRequest = function () {
+        self.findingFriend(true);
+        self.markerDetails(false);
+        self.markingMap(false);
+        self.sidebarTitle("Friend Request Notifications");
+        self.friendRequests()
+        self.openSidebar();
+    };
+
+    self.friendRequests = function () {
+        self.friendRequest.getRequests(self.user().name())
+        .success(function (data) {
+            self.friendList.removeAll();
+            if (self.profile.profile.friends == null) {
+                ko.utils.arrayForEach(data, function (item) {
+                    item.sentRequest = false;
+                });
+            } else {
+                ko.utils.arrayForEach(data, function (item) {
+                    ko.utils.arrayForEach(self.profile.profile.friends, function (friend) {
+                        if (friend.username == item.username) {
+                            item.sentRequest = true;
+                        } else {
+                            item.sentRequest = false;
+                        }
+                    });
+                });
+            }
+            self.requestList(data);
+        })
+        .fail(function (data) {
+            alert("There was an error: " + data.responseText);
+        });
+    }
 };
 
 app.addViewModel({
@@ -230,14 +372,9 @@ app.addViewModel({
     }
 });
 
-function Marker(marker) {
+function FriendRequest(request) {
     var self = this;
-    self.markerId = marker.markerId;
-    self.latitude = marker.latitude;
-    self.longitude = marker.longitude;
-    self.name = marker.name;
-    self.profileId = marker.profileId;
-    self.experience = marker.experience;
-    self.likes = marker.likes;
-    self.dislikes = marker.dislikes;
-}
+    self.fromUsername = request.fromUsername;
+    self.toUsername = request.toUsername;
+    self.datetime = request.datetime;
+};

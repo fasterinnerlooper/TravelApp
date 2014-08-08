@@ -14,47 +14,37 @@ using BanjiTravelApp.Context;
 
 namespace BanjiTravelApp.Controllers
 {
-    public class ProfileController : ApiController
+    public class FriendsController : ApiController
     {
         private TravelAppContext db = new TravelAppContext();
 
-        // GET api/Profile/username
-        [ResponseType(typeof(Profile))]
-        public async Task<IHttpActionResult> GetProfile(string id)
+        // GET api/Friends
+        public async Task<IHttpActionResult> GetFriends(int profileId)
         {
-            Profile profile = await (from p in db.Profiles
-                                     where p.Username == id
-                                     select p).FirstOrDefaultAsync();
+            Profile profile = await db.Profiles.FindAsync(profileId);
             if (profile == null)
             {
                 return NotFound();
             }
 
-            List<Marker> markers = await (from m in db.Markers
-                                          where m.ProfileId == profile.ProfileId
-                                          select m).ToListAsync<Marker>();
-            profile.Markers = markers;
+            return Ok(profile.Friends);
+        }
 
-            List<TravelPlan> travelPlans = await (from t in db.TravelPlans
-                                                  where t.ProfileId == profile.ProfileId
-                                                  select t).ToListAsync<TravelPlan>();
-
-            List<Friends> friends = await (from f in db.Friends
-                                           where f.LeftProfile.ProfileId == profile.ProfileId
-                                           select f).ToListAsync<Friends>();
-            foreach (Friends friend in friends)
+        // GET api/Friends/5
+        [ResponseType(typeof(Profile))]
+        public async Task<IHttpActionResult> GetFriend(int id)
+        {
+            Profile profile = await db.Profiles.FindAsync(id);
+            if (profile == null)
             {
-                friend.RightProfile.Markers = await (from m in db.Markers
-                                                     where m.ProfileId == friend.RightProfile.ProfileId
-                                                     select m).ToListAsync<Marker>();
+                return NotFound();
             }
-            profile.Friends = friends;
 
             return Ok(profile);
         }
 
-        // PUT api/Profile/5
-        public async Task<IHttpActionResult> PutProfile(int id, Profile profile)
+        // PUT api/Friends/5
+        public async Task<IHttpActionResult> PutFriend(int id, Profile profile)
         {
             if (!ModelState.IsValid)
             {
@@ -87,9 +77,9 @@ namespace BanjiTravelApp.Controllers
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        // POST api/Profile
+        // POST api/Friends
         [ResponseType(typeof(Profile))]
-        public async Task<IHttpActionResult> PostProfile(Profile profile)
+        public async Task<IHttpActionResult> PostFriend(Profile profile)
         {
             if (!ModelState.IsValid)
             {
@@ -102,9 +92,9 @@ namespace BanjiTravelApp.Controllers
             return CreatedAtRoute("DefaultApi", new { id = profile.ProfileId }, profile);
         }
 
-        // DELETE api/Profile/5
+        // DELETE api/Friends/5
         [ResponseType(typeof(Profile))]
-        public async Task<IHttpActionResult> DeleteProfile(int id)
+        public async Task<IHttpActionResult> DeleteFriend(int id)
         {
             Profile profile = await db.Profiles.FindAsync(id);
             if (profile == null)

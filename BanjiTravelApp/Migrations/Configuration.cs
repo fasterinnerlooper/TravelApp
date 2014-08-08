@@ -15,6 +15,39 @@ namespace BanjiTravelApp.Migrations
 
         protected override void Seed(BanjiTravelApp.Context.TravelAppContext context)
         {
+            context.Profiles.AddOrUpdate(
+                p => p.ProfileId,
+                new Profile
+                {
+                    ProfileId = 1,
+                    DisplayName = "Dave",
+                    Username = "dave",
+                    EmailAddress = "dave.ton@example.com"
+                }
+            );
+            context.Profiles.AddOrUpdate(
+                p => p.ProfileId,
+                new Profile
+                {
+                    ProfileId = 2,
+                    DisplayName = "Shafiq",
+                    Username = "shafiq",
+                    EmailAddress = "shafiq.jetha@example.com"
+                }
+            );
+            context.Markers.AddOrUpdate(
+                m => m.MarkerId,
+                new Marker
+                {
+                    MarkerId = 1,
+                    Name = "Home",
+                    Latitude = 0,
+                    Longitude = 0,
+                    ProfileId = 1,
+                    Date = DateTime.Now
+                }
+            );
+
             //context.Profiles.AddOrUpdate(
             //    p => p.ProfileId,
             //    new Profile { ProfileId = 1, DisplayName = "Shafiq" }

@@ -28,6 +28,8 @@ namespace BanjiTravelApp
                 "~/Scripts/app/manage.viewmodel.js",
                 "~/Scripts/app/userInfo.viewmodel.js",
                 "~/Scripts/app/profile.viewmodel.js",
+                "~/Scripts/app/travelPlans.viewmodel.js",
+                "~/Scripts/app/friendRequest.datamodel.js",
                 "~/Scripts/app/_run.js"));
 
             // Use the development version of Modernizr to develop with and learn from. Then, when you're

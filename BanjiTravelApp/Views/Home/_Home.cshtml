@@ -11,16 +11,60 @@
         </ul>
         <!-- /ko -->
         <!-- ko with: markerDetails -->
+        <!--    ko if: !friend -->
             <input type="hidden" data-bind="text: markerId" />
-            <label>Experience:</label><textarea class="form-control" data-bind="value: experience" rows="10"></textarea>
-            <label>Likes:</label><textarea class="form-control" data-bind="value: likes" rows="10"></textarea>
-            <label>Dislikes:</label><textarea class="form-control" data-bind="value: dislikes" rows="10"></textarea>
+            <label>Experience:</label><textarea class="form-control" data-bind="disable: friend, value: experience" rows="10"></textarea>
+            <label>Likes:</label><textarea class="form-control" data-bind="disable: friend, value: likes" rows="10"></textarea>
+            <label>Dislikes:</label><textarea class="form-control" data-bind="disable: friend, value: dislikes" rows="10"></textarea>
             <br/>
-            <button type="submit" data-bind="text: $parent.saving, click: $parent.saveMarkerDetails" style="background-color: lightpink" class="btn btn-default">Save</button>
+            <button type="submit" data-bind="visible: !friend, text: $parent.saving, click: $parent.saveMarkerDetails" style="background-color: lightpink" class="btn btn-default">Save</button>
+        <!--    /ko -->
+        <!--    ko if: friend -->
+        <h3 style="margin-top:0px;" data-bind="text: 'by ' + friend"></h3>
+        <h4>Experience</h4>
+        <span style="white-space: pre-wrap" data-bind="text: experience"></span>
+
+        <h4>Likes</h4>
+        <span style="white-space: pre-wrap" data-bind="text: likes"></span>
+
+        <h4>Dislikes</h4>
+        <span style="white-space: pre-wrap" data-bind="text: dislikes"></span>
+        <!--    /ko -->
         <!-- /ko -->
         <!-- ko with: travelPlans -->
+        <form class="form-horizontal row" role="form">
+            <div class="form-group">
+                <label for="StartDate" class="col-md-4 control-label">Start Date</label>
+                <div class="col-md-7">
+                    <input type="date" id="StartDate" class="form-control" data-bind="click: showCalendar(this)" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="EndDate" class="col-md-4 control-label">Start Date</label>
+                <div class="col-md-7">
+                    <input type="date" id="EndDate" class="form-control" data-bind="click: showCalendar(this)" />
+                </div>
+            </div>
+        </form>
         <!-- /ko -->
-    </div>
+        <!-- ko if: findingFriend -->
+        <form class="form-horizontal body-content" role="form" data-bind="submit: findProfiles">
+            <div class="form-group">
+                <label for="ProfileSearch">Find a Friend</label>
+                <input type="text" id="ProfileSearch" class="form-control" data-bind="value: searchText" required />
+                <span class="input-group-btn">
+                    <button type="submit" class="btn btn-default btn-primary">Find</button>
+                </span>
+            </div>
+        </form>
+        <ul data-bind="foreach: friendList">
+            <li><span data-bind="text: displayName"></span> (<span data-bind="text: emailAddress"></span>) <a href="#" data-bind="enabled: sentRequest, click: $parent.sendRequest">Add</a></li>
+        </ul>
+        <ul data-bind="foreach: requestList">
+            <li><span data-bind="text: fromUser.displayName"></span> (<span data-bind="text:fromUser.emailAddress"></span>) <a href="#" data-bind="click: $parent.acceptRequest">Accept</a></li>
+        </ul>
+        <!-- /ko-->
+        </div>
     <div id="map-canvas" data-bind="click: createMap(this)"></div>
     <div id="breadcrumb-container" style="position: absolute; bottom: 50px;padding-left: 20px;">
         <ul class="breadcrumb" data-bind="foreach: breadcrumbs">
