@@ -34,4 +34,8 @@
     self.showFriendRequest = function () {
         app.home().showFriendRequest();
     };
+
+    self.showAllFriends = function () {
+        app.home().showAllFriends();
+    };
 }

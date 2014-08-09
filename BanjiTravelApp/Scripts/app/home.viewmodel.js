@@ -31,8 +31,6 @@ function HomeViewModel(app) {
             self.friendRequest.getRequests(self.user().name())
             .success(function (data) {
                 self.friendRequestCount(data.length);
-                console.log("Inside home viewmodel");
-                console.log(self.friendRequestCount());
             });
         }
     });
@@ -202,7 +200,7 @@ function HomeViewModel(app) {
         })
         .success(function (data) {
             self.friendList.removeAll();
-            if (self.profile.profile.friends == null) {
+            if (self.profile.profile.friends == null || self.profile.profile.friends.length == 0) {
                 ko.utils.arrayForEach(data, function (item) {
                     item.sentRequest = false;
                 });
@@ -254,6 +252,10 @@ function HomeViewModel(app) {
             alert("There was an error: " + data.responseText)
         });
     }
+
+    self.addFriendMarkers = function () {
+        self.setMarkers(friend.rightProfile.markers, app.iconUrls['blue'], friend.rightProfile.displayName);
+    };
 
     self.saveMarkerDetails = function (data) {
         self.saving('Saving...');
@@ -332,8 +334,27 @@ function HomeViewModel(app) {
         self.markerDetails(false);
         self.markingMap(false);
         self.sidebarTitle("Friend Request Notifications");
-        self.friendRequests()
+        self.friendRequests();
         self.openSidebar();
+    };
+
+    self.showAllFriends = function () {
+        self.findFriend(true);
+        self.markerDetails(false);
+        self.markingMap(false);
+        self.sidebarTitle("All Friends");
+        self.listAllFriends();
+        self.openSidebar();
+    }
+
+    self.listAllFriends = function () {
+        self.friendRequest.getRequests(self.user().name())
+        .success(function (data) {
+            self.friendList.removeAll();
+            self.requestList(data);
+        }).fail(function (data) {
+            alert("The request failed with the following error: " + data.responseText);
+        });
     };
 
     self.friendRequests = function () {
