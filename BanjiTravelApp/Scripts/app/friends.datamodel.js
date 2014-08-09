@@ -1,14 +1,14 @@
 ﻿function FriendsDataModel(app) {
     var self = this;
     self.app = app;
-    requests = "/api/friends/";
+    self.requests = "/api/friends/";
 
     self.getRequests = function (id) {
-        return $.ajax(requests + id);
+        return $.ajax(self.requests + id);
     };
 
     self.sendRequest = function (data) {
-        return $.ajax(requests, {
+        return $.ajax(self.requests, {
             type: "POST",
             data: data
         });

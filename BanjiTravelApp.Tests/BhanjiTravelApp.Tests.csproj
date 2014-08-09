@@ -100,9 +100,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BanjiTravelApp\BanjiTravelApp.csproj">
+    <ProjectReference Include="..\BanjiTravelApp\BhanjiTravelApp.csproj">
       <Project>{6CC322B5-4623-467C-A25A-26BD054A9A89}</Project>
-      <Name>BanjiTravelApp</Name>
+      <Name>BhanjiTravelApp</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

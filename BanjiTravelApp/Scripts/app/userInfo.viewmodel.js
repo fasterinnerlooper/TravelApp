@@ -4,12 +4,10 @@
     // Data
     self.name = ko.observable(name);
     self.friendRequestCount = ko.computed(function () {
-        console.log("Inside userinfo viewmodel");
         if (app.home() == null) {
             return 0
         } else {
             var value = app.home().friendRequestCount();
-            console.log(value);
             return value;
         }
     });

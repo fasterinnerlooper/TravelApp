@@ -52,14 +52,16 @@
         <form class="form-horizontal body-content" role="form" data-bind="submit: findProfiles">
             <div class="form-group">
                 <label for="ProfileSearch">Find a Friend</label>
-                <input type="text" id="ProfileSearch" class="form-control" data-bind="value: searchText" required />
-                <span class="input-group-btn">
-                    <button type="submit" class="btn btn-default btn-primary">Find</button>
-                </span>
+                <div class="input-group">
+                    <input type="text" id="ProfileSearch" class="form-control" data-bind="value: searchText" required />
+                    <span class="input-group-btn">
+                        <button type="submit" class="btn btn-default btn-primary">Find</button>
+                    </span>
+                </div>
             </div>
         </form>
         <!-- /ko -->
-        <ul data-bind="foreach: friendList">
+        <ul data-bind="foreach: friendList" >
             <li><span data-bind="text: displayName"></span> (<span data-bind="text: emailAddress"></span>) <a href="#" data-bind="visible: sentRequest, click: $parent.sendRequest">Add</a></li>
         </ul>
         <ul data-bind="foreach: requestList">
