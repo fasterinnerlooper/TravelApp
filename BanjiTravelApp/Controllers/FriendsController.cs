@@ -18,29 +18,22 @@ namespace BanjiTravelApp.Controllers
     {
         private TravelAppContext db = new TravelAppContext();
 
-        // GET api/Friends
-        public async Task<IHttpActionResult> GetFriends(int profileId)
+        // GET api/Friends/username
+        public async Task<IHttpActionResult> GetFriends(string id)
         {
-            Profile profile = await db.Profiles.FindAsync(profileId);
+            Profile profile = await (from p in db.Profiles
+                                     where p.Username == id
+                                     select p).FirstOrDefaultAsync();
             if (profile == null)
             {
                 return NotFound();
             }
 
-            return Ok(profile.Friends);
-        }
+            List<Friends> friends = await (from f in db.Friends
+                                           where f.LeftProfile.ProfileId == profile.ProfileId
+                                           select f).ToListAsync();
 
-        // GET api/Friends/5
-        [ResponseType(typeof(Profile))]
-        public async Task<IHttpActionResult> GetFriend(int id)
-        {
-            Profile profile = await db.Profiles.FindAsync(id);
-            if (profile == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(profile);
+            return Ok(friends);
         }
 
         // PUT api/Friends/5

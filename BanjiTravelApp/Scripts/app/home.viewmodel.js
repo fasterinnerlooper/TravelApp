@@ -6,6 +6,7 @@ function HomeViewModel(app) {
     self.map = null;
     self.profile = new ProfileViewModel(self);
     self.friendRequest = new FriendRequestDataModel(self);
+    self.friends = new FriendsDataModel(self);
     self.geocoder = new google.maps.Geocoder();
 
     self.markers = ko.observableArray();
@@ -22,6 +23,7 @@ function HomeViewModel(app) {
     self.markerDetails = ko.observable();
     self.travelPlans = ko.observable();
     self.findingFriend = ko.observable(false);
+    self.showFriendForm = ko.observable(false);
     self.friendList = ko.observableArray();
     self.requestList = ko.observableArray();
     self.searchText = ko.observable().extend({ required: true });
@@ -163,13 +165,13 @@ function HomeViewModel(app) {
 
     self.openSidebar = function () {
         $('#sidebar').stop().animate({ left: '0px' });
-        $('#breadcrumb-container').stop().animate({ left: '320px' });
+        $('#breadcrumb-container').stop().animate({ left: '340px' });
     }
 
     self.closeSidebar = function () {
         self.markingMap(false);
         $('#breadcrumb-container').stop().animate({ left: '0px' });
-        $('#sidebar').stop().animate({ left: '-320px' });
+        $('#sidebar').stop().animate({ left: '-340px' });
     };
 
     self.setMarkerName = function (name) {
@@ -323,6 +325,9 @@ function HomeViewModel(app) {
 
     self.findFriend = function () {
         self.findingFriend(true);
+        self.showFriendForm(true);
+        self.friendList.removeAll();
+        self.requestList.removeAll();
         self.markerDetails(false);
         self.markingMap(false);
         self.sidebarTitle("Find Friends");
@@ -331,6 +336,9 @@ function HomeViewModel(app) {
 
     self.showFriendRequest = function () {
         self.findingFriend(true);
+        self.showFriendForm(false);
+        self.friendList.removeAll();
+        self.requestList.removeAll();
         self.markerDetails(false);
         self.markingMap(false);
         self.sidebarTitle("Friend Request Notifications");
@@ -339,7 +347,10 @@ function HomeViewModel(app) {
     };
 
     self.showAllFriends = function () {
-        self.findFriend(true);
+        self.findingFriend(true);
+        self.showFriendForm(false);
+        self.friendList.removeAll();
+        self.requestList.removeAll();
         self.markerDetails(false);
         self.markingMap(false);
         self.sidebarTitle("All Friends");
@@ -348,10 +359,15 @@ function HomeViewModel(app) {
     }
 
     self.listAllFriends = function () {
-        self.friendRequest.getRequests(self.user().name())
+        self.friends.getRequests(self.user().name())
         .success(function (data) {
+            var friendList = Array();
+            ko.utils.arrayForEach(data, function (item) {
+                item.rightProfile.sentRequest = false;
+                friendList.push(item.rightProfile);
+            });
             self.friendList.removeAll();
-            self.requestList(data);
+            self.friendList(friendList);
         }).fail(function (data) {
             alert("The request failed with the following error: " + data.responseText);
         });

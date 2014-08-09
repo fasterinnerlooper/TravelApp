@@ -289,6 +289,7 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Scripts\app\friendRequest.datamodel.js" />
+    <Content Include="Scripts\app\friends.datamodel.js" />
     <Content Include="Scripts\app\profile.viewmodel.js" />
     <Content Include="Scripts\app\travelPlans.viewmodel.js" />
     <Content Include="Scripts\bootstrap.js" />

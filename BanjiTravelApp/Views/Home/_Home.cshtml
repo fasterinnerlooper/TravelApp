@@ -20,7 +20,7 @@
             <button type="submit" data-bind="visible: !friend, text: $parent.saving, click: $parent.saveMarkerDetails" style="background-color: lightpink" class="btn btn-default">Save</button>
         <!--    /ko -->
         <!--    ko if: friend -->
-        <h3 style="margin-top:0px;" data-bind="text: 'by ' + friend"></h3>
+        <h3 style="margin-top:0;" data-bind="text: 'by ' + friend"></h3>
         <h4>Experience</h4>
         <span style="white-space: pre-wrap" data-bind="text: experience"></span>
 
@@ -48,6 +48,7 @@
         </form>
         <!-- /ko -->
         <!-- ko if: findingFriend -->
+        <!-- ko if: showFriendForm -->
         <form class="form-horizontal body-content" role="form" data-bind="submit: findProfiles">
             <div class="form-group">
                 <label for="ProfileSearch">Find a Friend</label>
@@ -57,8 +58,9 @@
                 </span>
             </div>
         </form>
+        <!-- /ko -->
         <ul data-bind="foreach: friendList">
-            <li><span data-bind="text: displayName"></span> (<span data-bind="text: emailAddress"></span>) <a href="#" data-bind="enabled: sentRequest, click: $parent.sendRequest">Add</a></li>
+            <li><span data-bind="text: displayName"></span> (<span data-bind="text: emailAddress"></span>) <a href="#" data-bind="visible: sentRequest, click: $parent.sendRequest">Add</a></li>
         </ul>
         <ul data-bind="foreach: requestList">
             <li><span data-bind="text: fromUser.displayName"></span> (<span data-bind="text:fromUser.emailAddress"></span>) <a href="#" data-bind="click: $parent.acceptRequest">Accept</a></li>
