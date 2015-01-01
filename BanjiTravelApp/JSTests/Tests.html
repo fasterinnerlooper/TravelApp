@@ -1,0 +1,42 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8"><meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <!-- QUnit stylesheet from the jQuery CDN -->
+    <link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-1.16.0.css">
+</head>
+<body>
+    <!-- elements that QUnit will inject test results into -->
+    <div id="qunit"></div>
+    <div id="qunit-fixture"></div>
+
+    <!-- required JS libraries, such as jQuery and KnockoutJS -->
+    <script src="/Scripts/jquery-1.10.2.js"></script>
+    <script src="/Scripts/knockout-2.3.0.debug.js"></script>
+
+    <!-- QUnit itself from the jQuery CDN -->
+    <script src="http://code.jquery.com/qunit/qunit-1.16.0.js"></script>
+
+    <!-- include tests themselves -->
+    
+    <!-- include the items to test -->
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=weather,places"></script>
+    <script src="/Scripts/app/ajaxPrefilters.js"></script>
+    <script src="/Scripts/app/app.bindings.js"></script>
+    <script src="/Scripts/app/app.datamodel.js"></script>
+    <script src="/Scripts/app/app.viewmodel.js"></script>
+    <script src="/Scripts/app/home.viewmodel.js"></script>
+    <script src="/Scripts/app/login.viewmodel.js"></script>
+    <script src="/Scripts/app/registerExternal.viewmodel.js"></script>
+    <script src="/Scripts/app/manage.viewmodel.js"></script>
+    <script src="/Scripts/app/userInfo.viewmodel.js"></script>
+    <script src="/Scripts/app/profile.viewmodel.js"></script>
+    <script src="/Scripts/app/travelPlans.viewmodel.js"></script>
+    <script src="/Scripts/app/friendRequest.datamodel.js"></script>
+    <script src="/Scripts/app/friends.datamodel.js"></script>
+    <script src="/Scripts/app/_run.js"></script>
+
+    <script src="tests.js"></script>
+</body>
+</html>

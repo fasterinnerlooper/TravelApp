@@ -13,11 +13,11 @@ namespace BanjiTravelApp.Context
         {
                 
         }
-        public DbSet<Profile> Profiles { get; set; }
-        public DbSet<Marker> Markers { get; set; }
-        public DbSet<TravelPlan> TravelPlans { get; set; }
-        public DbSet<FriendRequest> FriendRequests { get; set; }
-        public DbSet<Friends> Friends { get; set; }
+        public virtual DbSet<Profile> Profiles { get; set; }
+        public virtual DbSet<Marker> Markers { get; set; }
+        public virtual DbSet<TravelPlan> TravelPlans { get; set; }
+        public virtual DbSet<FriendRequest> FriendRequests { get; set; }
+        public virtual DbSet<Friends> Friends { get; set; }
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             //FriendRequest

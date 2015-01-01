@@ -150,6 +150,7 @@ function HomeViewModel(app) {
             gmarker.name = marker.name;
             //Set up marker click event
             self.giveMarkerClickEvent(gmarker);
+            self.giveMarkerHoverEvent(gmarker);
         });
     };
 
@@ -162,6 +163,15 @@ function HomeViewModel(app) {
             self.openSidebar();
         });
     };
+
+    self.giveMarkerHoverEvent = function (marker) {
+        google.maps.event.addListener(marker, 'mouseover', function () {
+            self.infoWindow = new google.maps.InfoWindow({
+                content: '<a href="#">Current Location</a> | <a href="#">Going Here</a> | <a href="#">Been Here</a>'
+            });
+            self.infoWindow.open(self.map, marker);
+        });
+    }
 
     self.openSidebar = function () {
         $('#sidebar').stop().animate({ left: '0px' });

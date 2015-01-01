@@ -15,7 +15,7 @@
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=weather,places"></script>
 </head>
 <body style="overflow:hidden;">
-    <div style="display: none;height: 100%;padding-top:20px;" data-bind="visible: true" class="container-fluid">
+    <div style="display: none;height: 100%;padding:0" data-bind="visible: true" class="container-fluid">
         <div class="navbar navbar-fixed-top navbar-default">
             <div class="container-fluid">
                 <div class="navbar-header">
@@ -33,7 +33,7 @@
                             <ul class="dropdown-menu" role="menu">
                                 <li><a href="#" data-bind="click: findFriend">Add a friend</a></li>
                                 <li><a href="#" data-bind="click: showFriendRequest">Friend Requests <span id="friendRequestCount" class="badge" data-bind="text: friendRequestCount"></span></a></li>
-                                <li><a href="#" data-bind="click: showAllFriends">All Friends</a></li>
+                                <li><a href="#" data-bind="click: showAllFriends">All Friends</a></li>  
                                 <li><a href="#">Chat</a></li>
                             </ul>
                         </li>
@@ -64,7 +64,7 @@
                 </div>
             </div>
         </div>
-        <div style="padding-top: 40px;height:100%;">
+        <div style="height:100%;padding: 55px 0 50px">
             @Html.Partial("_Home")
             @Html.Partial("_Login")
             @Html.Partial("_RegisterExternal")

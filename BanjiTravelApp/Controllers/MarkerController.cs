@@ -15,7 +15,7 @@ namespace BanjiTravelApp.Controllers
 {
     public class MarkerController : ApiController
     {
-        private TravelAppContext db = new TravelAppContext();
+        public TravelAppContext db = new TravelAppContext();
 
         // GET api/Marker
         public IQueryable<Marker> GetMarkers()
@@ -99,6 +99,26 @@ namespace BanjiTravelApp.Controllers
             db.SaveChanges();
 
             return Ok(marker);
+        }
+
+        [ResponseType(typeof(List<Marker>))]
+        public IHttpActionResult GetFriendsMarkers(Marker marker, int id)
+        {
+            var friends = db.Friends.Where(f => f.UserId1 == id).ToList<Friends>();
+            var markers = db.Markers.ToList();
+            List<Marker> returnMarkers = new List<Marker>();
+            foreach(Marker m in markers)
+            {
+                if (m.Longitude == marker.Longitude && m.Latitude == marker.Latitude)
+                {
+                    if (friends.Any(f => f.UserId2 == m.ProfileId))
+                    {
+                        returnMarkers.Add(m);
+                    }
+                }
+            }
+
+            return Ok(returnMarkers);
         }
 
         protected override void Dispose(bool disposing)
